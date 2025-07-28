@@ -1,0 +1,7 @@
+torch
+sentence-transformers
+spacy
+networkx
+scikit-learn
+PyMuPDF
+numpy
