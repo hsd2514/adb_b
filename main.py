@@ -92,9 +92,12 @@ class LayoutAwareChunker:
 
     def chunk(self, pdf_path):
         print(f"  [Chunker] Processing: {os.path.basename(pdf_path)}")
+        print(f"  [Debug] Full path: {pdf_path}")
+        print(f"  [Debug] File exists: {os.path.exists(pdf_path)}")
         chunks = []
         try:
             doc = fitz.open(pdf_path)
+            print(f"  [Debug] PDF opened successfully, {len(doc)} pages")
             body_size, title_sizes, min_chunk_words, max_chunk_words = self.analyze_document_style(doc)
             
             current_title = "Overview"
@@ -228,9 +231,18 @@ def run_pipeline(collection_path, model_factory):
 
     persona, job = input_data['persona']['role'], input_data['job_to_be_done']['task']
     
-    pdf_dir = os.path.join(collection_path, 'pdfs')
-    if not os.path.isdir(pdf_dir): pdf_dir = collection_path
+    # Try different PDF directory names (PDFs, pdfs, or collection root)
+    pdf_dir = os.path.join(collection_path, 'PDFs')  # Capital P first
+    if not os.path.isdir(pdf_dir): 
+        pdf_dir = os.path.join(collection_path, 'pdfs')  # lowercase p
+    if not os.path.isdir(pdf_dir): 
+        pdf_dir = collection_path  # fallback to collection root
+    
+    print(f"  [Debug] Looking for PDFs in: {pdf_dir}")
+    print(f"  [Debug] PDF directory exists: {os.path.isdir(pdf_dir)}")
+    
     pdf_files = [os.path.join(pdf_dir, doc['filename']) for doc in input_data['documents'] if os.path.exists(os.path.join(pdf_dir, doc['filename']))]
+    print(f"  [Debug] Found {len(pdf_files)} PDF files: {[os.path.basename(f) for f in pdf_files]}")
 
     chunker = LayoutAwareChunker()
     all_chunks = [chunk for pdf_path in pdf_files for chunk in chunker.chunk(pdf_path)]
@@ -302,8 +314,35 @@ def run_pipeline(collection_path, model_factory):
 
     return output_json
 
+def print_directory_tree(path='.', prefix='', max_depth=3, current_depth=0):
+    """Print directory structure like tree command"""
+    if current_depth > max_depth:
+        return
+    
+    try:
+        items = sorted(os.listdir(path))
+        for i, item in enumerate(items):
+            if item.startswith('.'):
+                continue
+                
+            item_path = os.path.join(path, item)
+            is_last = i == len(items) - 1
+            current_prefix = "└── " if is_last else "├── "
+            print(f"{prefix}{current_prefix}{item}")
+            
+            if os.path.isdir(item_path) and current_depth < max_depth:
+                extension = "    " if is_last else "│   "
+                print_directory_tree(item_path, prefix + extension, max_depth, current_depth + 1)
+    except PermissionError:
+        print(f"{prefix}[Permission Denied]")
+
 if __name__ == "__main__":
     start_time = time.time()
+    
+    print("=== DOCKER CONTAINER FILE STRUCTURE ===")
+    print_directory_tree('.', '', max_depth=2)
+    print("=" * 40)
+    
     all_dirs = [d for d in os.listdir(BASE_PATH) if os.path.isdir(os.path.join(BASE_PATH, d))]
     collection_dirs = [d for d in all_dirs if d.lower().startswith('collection')]
     

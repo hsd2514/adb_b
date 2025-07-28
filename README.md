@@ -15,11 +15,16 @@ This submission presents a sophisticated document intelligence system that extra
 
 #### Using Docker (Recommended)
 ```bash
-# Build the container
-docker build -t adobe-challenge .
+# Build the container (Dockerfile is in current directory)
+docker build -t adobe-challenge1b .
 
-# Run the system
-docker run -v $(pwd):/app/data adobe-challenge
+# Run the system with volume mount to save output locally
+docker run -v $(pwd):/app adobe-challenge1b
+
+# Output files will be generated in your local Collection folders:
+# - Collection 1/challenge1b_output.json
+# - Collection 2/challenge1b_output.json  
+# - Collection 3/challenge1b_output.json
 ```
 
 #### Direct Python Execution
@@ -116,11 +121,18 @@ The system generates `challenge1b_output.json` in each collection with:
 - **Extracted Sections**: Ranked document sections with importance scores
 - **Subsection Analysis**: Refined text snippets optimized for the given persona and task
 
-### 🎯 How It Works
+### 🎯 How It Works & Output Location
 1. **Reads** `challenge1b_input.json` from each Collection folder
-2. **Processes** all PDFs in the PDFs/ subdirectory using advanced NLP techniques
+2. **Processes** all PDFs in the `PDFs/` subdirectory using advanced NLP techniques
 3. **Generates** `challenge1b_output.json` with persona-optimized, ranked content
 4. **Saves** results directly in each Collection folder for evaluation
+
+**📍 Output Files Location:**
+- `Collection 1/challenge1b_output.json` ← Generated here
+- `Collection 2/challenge1b_output.json` ← Generated here  
+- `Collection 3/challenge1b_output.json` ← Generated here
+
+**🐳 Docker Output:** When using Docker with volume mount (`-v $(pwd):/app`), output files are saved directly to your local Collection folders, not inside the container.
 
 ### ⚡ Performance Benchmarks
 - **Collection 1** (7 PDFs): ~28 seconds
