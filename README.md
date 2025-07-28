@@ -16,7 +16,7 @@ This submission presents a sophisticated document intelligence system that extra
 #### Using Docker (Recommended)
 ```bash
 # Build the container
-docker build -f Dockerfile.new -t adobe-challenge .
+docker build -t adobe-challenge .
 
 # Run the system
 docker run -v $(pwd):/app/data adobe-challenge
@@ -65,7 +65,7 @@ python main.py
 ```
 submission/
 ├── main.py                         # Core document intelligence system
-├── Dockerfile.new                  # Optimized Python 3.10 container
+├── Dockerfile                      # Optimized Python 3.10 container
 ├── requirements.txt                # Clean dependencies
 ├── README.md                       # This documentation
 └── APPROACH.md                     # Technical approach details
@@ -76,7 +76,7 @@ submission/
 Challenge_1b/
 ├── submission/                     # ← SUBMIT THIS FOLDER
 │   ├── main.py                     # Main algorithm (human-designed)
-│   ├── Dockerfile.new              # Docker configuration  
+│   ├── Dockerfile                  # Docker configuration  
 │   ├── requirements.txt            # Python dependencies
 │   ├── README.md                   # Documentation
 │   └── APPROACH.md                 # Technical details
